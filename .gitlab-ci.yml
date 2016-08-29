@@ -1,0 +1,18 @@
+image: jeroenknoops/java8-groovy-chrome-xvfb
+
+before_script:
+  - sleep 3
+  - wget http://downloads.arduino.cc/arduino-1.6.11-linux64.tar.xz
+  - tar xvf arduino-1.6.11-linux64.tar.xz
+  - export DISPLAY=:1.0
+  - /etc/init.d/xvfb stop; echo Hello; /etc/init.d/xvfb start; ps -eAf|grep -i xvfb
+  - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
+  - git clone https://gitlab.com/riders/giddy-arduino.git arduino-1.6.11/libraries/giddy-arduino
+
+
+jobs:
+  only:
+    - gitlab
+  script:
+    - echo Verifying
+    - ./arduino-1.6.11/arduino --verify --board arduino:avr:nano tracker/tracker.ino
