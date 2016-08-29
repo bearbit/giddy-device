@@ -10,7 +10,7 @@ before_script:
   - git clone https://gitlab.com/riders/giddy-arduino.git arduino-1.6.11/libraries/giddy-arduino
 
 
-jobs:
+test:
   only:
     - gitlab
   script:
