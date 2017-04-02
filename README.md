@@ -1,4 +1,5 @@
-# Giddy Arduino
+[![CircleCI](https://circleci.com/gh/bearbit/giddy-device.svg?style=svg)](https://circleci.com/gh/bearbit/giddy-device)
+# Giddy Device
 
 Arduino Module 
 
