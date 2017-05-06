@@ -34,6 +34,7 @@ class ArduinoApp {
     constructor(_settings) {
         this._settings = _settings;
     }
+
     /**
      * Need refresh Arduino IDE's setting when starting up.
      * @param {boolean} force - Whether force initialzie the arduino
@@ -105,6 +106,9 @@ class ArduinoApp {
             }
             outputChannel_1.arduinoChannel.show();
             outputChannel_1.arduinoChannel.start(`Upload sketch - ${dc.sketch}`);
+            if (dc._sketchbookPath) {
+                this.setCustomSketchbookPath(dc.sketchbookPath);
+            }
             const serialMonitor = serialMonitor_1.SerialMonitor.getIntance();
             const needRestore = yield serialMonitor.closeSerialMonitor(dc.port);
             yield vscode.workspace.saveAll(false);
@@ -117,11 +121,30 @@ class ArduinoApp {
                 if (needRestore) {
                     yield serialMonitor.openSerialMonitor();
                 }
+                this.restorePreferences();
                 outputChannel_1.arduinoChannel.end(`Uploaded the sketch: ${dc.sketch}${os.EOL}`);
             }), (reason) => {
+                this.restorePreferences();
                 outputChannel_1.arduinoChannel.error(`Exit with code=${reason.code}${os.EOL}`);
             });
         });
+    }
+    setCustomSketchbookPath(sketchbookPath) {
+        outputChannel_1.arduinoChannel.info(`Picked up custom sketchboardPath - ${sketchbookPath}`);
+        var copyPreferences = new Map(this._settings.preferences);
+        copyPreferences.set("sketchbook.path", sketchbookPath);
+        fs.writeFileSync(this._settings.preferencePath, this.preferencesToString(copyPreferences));
+    }
+    restorePreferences() {
+        fs.writeFileSync(this._settings.preferencePath, this.preferencesToString(this._settings.preferences));
+        outputChannel_1.arduinoChannel.info(`Restored sketchboardPath`);
+    }
+    preferencesToString(preferences) {
+        var preferencesAsString = "";
+        preferences.forEach(function(value, key, map) {
+            preferencesAsString += key + "=" + value + "\r\n";
+        });
+        return preferencesAsString;
     }
     verify() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -135,6 +158,9 @@ class ArduinoApp {
             }
             yield vscode.workspace.saveAll(false);
             outputChannel_1.arduinoChannel.start(`Verify sketch - ${dc.sketch}`);
+            if (dc._sketchbookPath) {
+                this.setCustomSketchbookPath(dc.sketchbookPath);
+            }
             const appPath = path.join(vscode.workspace.rootPath, dc.sketch);
             const args = ["--verify", "--board", boardDescriptor, appPath];
             if (vscodeSettings_1.VscodeSettings.getIntance().logLevel === "verbose") {
@@ -142,8 +168,10 @@ class ArduinoApp {
             }
             outputChannel_1.arduinoChannel.show();
             yield util.spawn(this._settings.commandPath, outputChannel_1.arduinoChannel.channel, args).then((result) => {
+                this.restorePreferences();
                 outputChannel_1.arduinoChannel.end(`Finished verify sketch - ${dc.sketch}${os.EOL}`);
             }, (reason) => {
+                this.restorePreferences();
                 outputChannel_1.arduinoChannel.error(`Exit with code=${reason.code}${os.EOL}`);
             });
         });
@@ -394,6 +422,12 @@ class ArduinoApp {
             vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(destExample), true);
         }
         return destExample;
+    }
+    get customPreferences() {
+        return this._customPreferences;
+    }
+    set customPreferences(value) {
+        this._customPreferences = value;
     }
     get settings() {
         return this._settings;

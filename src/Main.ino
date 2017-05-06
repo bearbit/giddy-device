@@ -21,6 +21,7 @@ TFT_ILI9163C tft = TFT_ILI9163C(__CS, __DC, __RST);
 void setup(void) {
   tft.begin(SPISettings(16000000, MSBFIRST, SPI_MODE0));
   tft.setTextColor(WHITE, BLACK);
+  Serial.begin(9600);
 }
 
 void loop() {

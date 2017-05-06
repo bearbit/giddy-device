@@ -1,0 +1,7 @@
+{
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328",
+    "port": "COM4",
+    "sketch": "src\\Main.ino",
+    "sketchbookPath": "E:\\Work\\giddy\\giddy-device\\res"
+}

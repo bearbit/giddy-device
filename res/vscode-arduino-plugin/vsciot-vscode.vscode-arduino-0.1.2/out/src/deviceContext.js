@@ -67,6 +67,7 @@ class DeviceContext {
                     this._port = deviceConfigJson.port || this._port;
                     this._board = deviceConfigJson.board || this._board;
                     this._sketch = deviceConfigJson.sketch || this._sketch;
+                    this._sketchbookPath = deviceConfigJson.sketchbookPath || this._sketchbookPath;
                     this._configuration = deviceConfigJson.configuration || this._configuration;
                 }
                 else {
@@ -87,6 +88,7 @@ class DeviceContext {
             return;
         }
         deviceConfigJson.sketch = this.sketch;
+        deviceConfigJson.sketchbookPath = this.sketchbookPath;
         deviceConfigJson.port = this.port;
         deviceConfigJson.board = this.board;
         deviceConfigJson.configuration = this.configuration;
@@ -112,6 +114,13 @@ class DeviceContext {
     }
     set sketch(value) {
         this._sketch = value;
+        this.saveContext();
+    }
+    get sketchbookPath() {
+        return this._sketchbookPath;
+    }
+    set sketchbookPath(value) {
+        this._sketchbookPath = value;
         this.saveContext();
     }
     get configuration() {
