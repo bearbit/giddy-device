@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{graphicx}
+\graphicspath{ {img/} }
+
+\usepackage{hyperref}
+\usepackage{listings}
+
+\newcommand{\device}{giddy-device }
+
+\begin{document}
+
+\title{\device documentation}
+\author{Alex Bondor}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\begin{abstract}
+This documentation contains all the necessary additional information for programming the \device.
+\end{abstract}
+
+\section{Display driver}
+The \device uses an open source library that can be found in this  \href{https://github.com/sumotoy/TFT_ILI9163C}{github-repo}. In addition, Adafruit GFX library is used as well. This can be downloaded from this \href{https://github.com/adafruit/Adafruit-GFX-Library.git}{github-repo}.
+
+The \lstinline|libraries| folder contains the custom version of the libraries that work for the current hardware setup.
+
+\end{document}
