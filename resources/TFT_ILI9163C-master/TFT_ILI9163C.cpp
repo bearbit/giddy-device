@@ -2,7 +2,6 @@
 #include <limits.h>
 #include "pins_arduino.h"
 #include "wiring_private.h"
-#include <SPI.h>
 
 #if defined(SPI_HAS_TRANSACTION)
 	static SPISettings ILI9163C_SPI;
@@ -288,8 +287,32 @@
 	}
 #endif //#if defined(TEENSY3.x)
 
+void TFT_ILI9163C::begin() {
+#if defined(__AVR__)
+	#if defined(SPI_HAS_TRANSACTION)
+		begin(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+	#endif
+#elif defined(__SAM3X8E__)
+	#if defined(SPI_HAS_TRANSACTION)
+		begin(SPISettings(24000000, MSBFIRST, SPI_MODE0));
+	#endif
+#elif defined(__MKL26Z64__)
+	if(_useSPI1) {
+		begin(SPISettings(24000000, MSBFIRST, SPI_MODE0));
+	}
+	else {
+		begin(SPISettings(12000000, MSBFIRST, SPI_MODE0));
+	}
+#elif defined(__MK20DX128__) || defined(__MK20DX256__)
+	begin(SPISettings(30000000, MSBFIRST, SPI_MODE0));
+#else
+	#if defined(SPI_HAS_TRANSACTION)
+		begin(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+	#endif
+#endif
+}
 
-void TFT_ILI9163C::begin(void) 
+void TFT_ILI9163C::begin(SPISettings spiSettings) 
 {
 	sleep = 0;
 	_initError = 0b00000000;
@@ -306,7 +329,7 @@ void TFT_ILI9163C::begin(void)
 		SPI.setBitOrder(MSBFIRST);
 		SPI.setDataMode(SPI_MODE0);
 	#else
-		ILI9163C_SPI = SPISettings(8000000, MSBFIRST, SPI_MODE0);
+		ILI9163C_SPI = spiSettings;
 	#endif
 	*csport &= ~cspinmask;// toggle CS low so it'll listen to us
 #elif defined(__SAM3X8E__)
@@ -322,7 +345,7 @@ void TFT_ILI9163C::begin(void)
 		SPI.setBitOrder(MSBFIRST);
 		SPI.setDataMode(SPI_MODE0);
 	#else
-		ILI9163C_SPI = SPISettings(24000000, MSBFIRST, SPI_MODE0);
+		ILI9163C_SPI = spiSettings;
 	#endif
 	csport ->PIO_CODR  |=  cspinmask; // toggle CS low so it'll listen to us
 #elif defined(__MKL26Z64__)//Teensy LC (preliminary)
@@ -330,7 +353,7 @@ void TFT_ILI9163C::begin(void)
 	pinMode(_cs, OUTPUT);
 	if (_useSPI1){
 		if ((_mosi == 0 || _mosi == 21) && (_sclk == 20)) {//identify alternate SPI channel 1 (24Mhz)
-			ILI9163C_SPI = SPISettings(24000000, MSBFIRST, SPI_MODE0);
+			ILI9163C_SPI = spiSettings;
 			SPI1.setMOSI(_mosi);
 			SPI1.setSCK(_sclk);
 			SPI1.begin();
@@ -345,7 +368,7 @@ void TFT_ILI9163C::begin(void)
 		}
 	} else {
 		if ((_mosi == 11 || _mosi == 7) && (_sclk == 13 || _sclk == 14)) {//valid SPI pins?
-			ILI9163C_SPI = SPISettings(12000000, MSBFIRST, SPI_MODE0);
+			ILI9163C_SPI = spiSettings;
 			SPI.setMOSI(_mosi);
 			SPI.setSCK(_sclk);
 			SPI.begin();
@@ -361,7 +384,7 @@ void TFT_ILI9163C::begin(void)
 	}
 	digitalWriteFast(_cs, LOW);
 #elif defined(__MK20DX128__) || defined(__MK20DX256__)
-	ILI9163C_SPI = SPISettings(30000000, MSBFIRST, SPI_MODE0);
+	ILI9163C_SPI = spiSettings;
 	if ((_mosi == 11 || _mosi == 7) && (_sclk == 13 || _sclk == 14)) {
         SPI.setMOSI(_mosi);
         SPI.setSCK(_sclk);
@@ -388,7 +411,7 @@ void TFT_ILI9163C::begin(void)
 		SPI.setBitOrder(MSBFIRST);
 		SPI.setDataMode(SPI_MODE0);
 	#else
-		ILI9163C_SPI = SPISettings(8000000, MSBFIRST, SPI_MODE0);
+		ILI9163C_SPI = spiSettings;
 	#endif
 	digitalWrite(_cs, LOW);
 #endif
@@ -1032,8 +1055,8 @@ void TFT_ILI9163C::setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t
 	#else
 		writecommand(CMD_CLMADRS); // Column
 		if (rotation == 0 || rotation > 1){
-			writedata16(x0);
-			writedata16(x1);
+			writedata16(x0 + __HOFFSET);
+			writedata16(x1 + __HOFFSET);
 		} else {
 			writedata16(x0 + __OFFSET);
 			writedata16(x1 + __OFFSET);
@@ -1055,8 +1078,8 @@ void TFT_ILI9163C::setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t
 void TFT_ILI9163C::_setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
 	writecommand_cont(CMD_CLMADRS); // Column
 	if (rotation == 0 || rotation > 1){
-		writedata16_cont(x0);
-		writedata16_cont(x1);
+		writedata16_cont(x0 + __HOFFSET);
+		writedata16_cont(x1 + __HOFFSET);
 	} else {
 		writedata16_cont(x0 + __OFFSET);
 		writedata16_cont(x1 + __OFFSET);

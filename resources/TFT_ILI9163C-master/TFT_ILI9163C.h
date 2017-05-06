@@ -111,6 +111,7 @@ Done!
 #include "Arduino.h"
 #include "Print.h"
 #include <Adafruit_GFX.h>
+#include <SPI.h>
 
 #include "_settings/TFT_ILI9163C_settings.h"
 
@@ -150,6 +151,7 @@ class TFT_ILI9163C : public Adafruit_GFX {
 	//TFT_ILI9163C(uint8_t CS, uint8_t DC);//connect rst pin to VDD
 	
 	void     	begin(void),
+				begin(SPISettings spiSettings),
 				setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1),//graphic Addressing
 				setCursor(int16_t x,int16_t y),//char addressing
 				pushColor(uint16_t color),
