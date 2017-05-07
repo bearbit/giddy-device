@@ -5,4 +5,5 @@ dependencies:
 test:
     override:
         - platformio ci src/Main.ino --board=nanoatmega328 --lib="res/libraries/*"
-artifacts: false        
+general:
+  artifacts: false        
