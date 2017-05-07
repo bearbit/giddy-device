@@ -18,14 +18,6 @@ Arduino IDE is required. Please install it from [here](https://www.arduino.cc/en
 - The supported Arduino IDE versions are 1.6.x and later.
 - The Windows Store's version of Arduino IDE is not supported because of the sandbox environment of Windows app.
 
-## Installation
-Open VS Code and press `F1` or `Ctrl + Shift + P` to open command palette, select **Install Extension** and type `vscode-arduino`.
-
-Or launch VS Code Quick Open (`Ctrl + P`), paste the following command, and press enter.
-```bash
-ext install vscode-arduino
-```
-
 ## Commands
 This extension provides several commands in the Command Palette (**F1** or **Ctrl+Shift+P**) for working with `*.ino` files:
 
