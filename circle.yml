@@ -4,4 +4,4 @@ dependencies:
         - sudo pip install -U platformio
 test:
     override:
-        - platformio ci src/Main.ino --board=nanoatmega328 --lib="res/libraries/*"       
+        - platformio ci src/Main.ino --board=nanoatmega328 --lib="."
